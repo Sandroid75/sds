@@ -116,7 +116,7 @@ sds sdschremove(sds s, const char *cset) {
         return s;
     }
 
-    purgedstr = (char *) alloc(sdslen(s) +1); //allocate memory for new string
+    purgedstr = (char *) malloc(sdslen(s) +1); //allocate memory for new string
     dst = purgedstr; //dst point to new empty string
     src = s; //src point to original sds string
 
@@ -158,7 +158,7 @@ sds sdscasechremove(sds s, const char *cset) {
     size_t len = strlen(cset);
     int i;
 
-    ignorecase = (char *) alloc(len +1); //allocate memory for ignorecase string
+    ignorecase = (char *) malloc(len +1); //allocate memory for ignorecase string
 
     for(i = 0; i < len; i++) {
         ignorecase[i] = tolower(cset[i]); //convert cset to lowercase
