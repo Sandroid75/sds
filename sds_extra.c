@@ -99,3 +99,82 @@ int sdscasesds(const sds haystack, const sds needle) {
 
     return result; //no match found
 }
+
+/* The sdschremove() function remove all single char occurrence
+ * of the substring cset from the string s.
+ * The terminating null bytes '\0' are not compared.
+ * This function is case sensitive.
+ * Return value:
+ *
+ *     s string pointer
+ */
+sds sdschremove(sds s, const char *cset) {
+    char *ptr, *src, *dst, *purgedstr;
+    size_t newlen = 0, len = sdslen(s);
+
+    if(!len || !cset || !strlen(cset)) { //check if there is something to remove
+        return s;
+    }
+
+    purgedstr = (char *) alloc(sdslen(s) +1); //allocate memory for new string
+    dst = purgedstr; //dst point to new empty string
+    src = s; //src point to original sds string
+
+    for(int i = 0; i < len; i++) { //walk to all binary 's' sds string
+        for(ptr = cset; *ptr && i < len; ptr++) { //walk to all NULL terminated 'cset' string and up to the end of binary sds
+            if(*src == *ptr) {
+                src++; //current ch is present in cset than skip to next
+                i++; //increment the index of binary sds
+                ptr = cset; //reset the ptr pointer to beguin of cset string
+            }
+        }
+        if(i < len) { //check if the sds binary string is over
+            *dst = *src; //the current char of scr is not present in cset string
+            dst++; //increment the dst pointer
+            src++; //increment the src pointer
+            newlen++; //increment the count of newlen
+        }
+    }
+
+    sdsfree(s); //destroy original sds binary string
+    s = sdsnewlen(purgedstr, newlen); //create the ner sds binary string purged from 'cset' char
+    if(purgedstr) { //check purgedstr
+        free(purgedstr); //release the memory
+    }
+
+    return s;
+}
+
+/* The sdscasechremove() function remove all single char occurrence
+ * of the substring cset from the string s.
+ * The terminating null bytes '\0' are not compared.
+ * This function ignore case.
+ * Return value:
+ *
+ *     s string pointer
+ */
+sds sdscasechremove(sds s, const char *cset) {
+    char *ignorecase;
+    size_t len = strlen(cset);
+    int i;
+
+    ignorecase = (char *) alloc(len +1); //allocate memory for ignorecase string
+
+    for(i = 0; i < len; i++) {
+        ignorecase[i] = tolower(cset[i]); //convert cset to lowercase
+    }
+    s = sdschremove(s, ignorecase); //call the sdschremove function with lowercase
+    
+    for(i = 0; i < len; i++) {
+        ignorecase[i] = toupper(cset[i]); //convert cset to uppercase
+    }
+    s = sdschremove(s, ignorecase); //call the sdschremove function with uppercase
+    
+    if(ignorecase) { //check ignorecase
+        free(ignorecase); //release the memory
+    }
+
+    return s;
+}
+
+
