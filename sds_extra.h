@@ -36,7 +36,7 @@
 
 int sdssds(const sds haystack, const sds needle);
 int sdscasesds(const sds haystack, const sds needle);
-sds sdschremove(sds s, const char *cset);
-sds sdscasechremove(sds s, const char *cset);
+sds sdschremove(sds s, char *cset);
+sds sdscasechremove(sds s, char *cset);
 
 #endif

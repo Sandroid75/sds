@@ -34,6 +34,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 
 #include "sds.h"
 #include "sds_extra.h"
@@ -108,7 +109,7 @@ int sdscasesds(const sds haystack, const sds needle) {
  *
  *     s string pointer
  */
-sds sdschremove(sds s, const char *cset) {
+sds sdschremove(sds s, char *cset) {
     char *ptr, *src, *dst, *purgedstr;
     size_t newlen = 0, len = sdslen(s);
 
@@ -153,7 +154,7 @@ sds sdschremove(sds s, const char *cset) {
  *
  *     s string pointer
  */
-sds sdscasechremove(sds s, const char *cset) {
+sds sdscasechremove(sds s, char *cset) {
     char *ignorecase;
     size_t len = strlen(cset);
     int i;
@@ -163,11 +164,13 @@ sds sdscasechremove(sds s, const char *cset) {
     for(i = 0; i < len; i++) {
         ignorecase[i] = tolower(cset[i]); //convert cset to lowercase
     }
+    ignorecase[len] = '\0';
     s = sdschremove(s, ignorecase); //call the sdschremove function with lowercase
     
     for(i = 0; i < len; i++) {
         ignorecase[i] = toupper(cset[i]); //convert cset to uppercase
     }
+    ignorecase[len] = '\0';
     s = sdschremove(s, ignorecase); //call the sdschremove function with uppercase
     
     if(ignorecase) { //check ignorecase
